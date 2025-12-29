@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Aureen X - Diagnóstico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --glass-bg: rgba(30, 30, 30, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --accent-color: #0A84FF;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            margin: 0; height: 100vh; display: flex;
+            align-items: center; justify-content: center;
+        }
+        .app-container {
+            width: 100%; height: 100%; max-width: 380px; max-height: 800px;
+            background: var(--glass-bg); backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border); border-radius: 40px;
+            display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        .app-header { padding: 15px 20px; text-align: center; font-size: 1.2em; font-weight: 700; }
+        .display { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; text-align: right; }
+        .main-amount { font-size: 3rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
+        .converted-amount { font-size: 1.3em; color: var(--text-secondary); margin-top: 5px; font-variant-numeric: tabular-nums; }
+        .rate-info { font-size: 0.9em; color: var(--text-secondary); margin-bottom: 5px; }
+        
+        /* ESTILOS TASA MAÑANA (ROJA) */
+        .next-rate-info {
+            font-size: 0.85em; margin-top: 5px; padding-top: 5px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: flex-end; align-items: center;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px; }
+        .key {
+            background: rgba(255,255,255,0.05); border: none; color: white;
+            font-size: 1.4em; padding: 15px 0; border-radius: 16px; cursor: pointer;
+        }
+        .key:active { background: rgba(255,255,255,0.2); }
+        .key.special { background: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="app-header">Aureen X (Diagnóstico)</div>
+    
+    <div class="display">
+        <div class="rate-info">
+            Tasa <span id="bcv-date-display">--/--</span>: 
+            <span id="bcv-rate-display" style="color: #2ECC71; font-weight: bold;">Cargando...</span>
+        </div>
+        
+        <div class="main-amount">$ <span id="main-display">0</span></div>
+        <div class="converted-amount">Bs <span id="sub-display">0,00</span></div>
+    </div>
+
+    <div class="keypad">
+        <button class="key" onclick="input('7')">7</button>
+        <button class="key" onclick="input('8')">8</button>
+        <button class="key" onclick="input('9')">9</button>
+        <button class="key" style="color:#EF5350" onclick="del()">⌫</button>
+        <button class="key" onclick="input('4')">4</button>
+        <button class="key" onclick="input('5')">5</button>
+        <button class="key" onclick="input('6')">6</button>
+        <button class="key" onclick="clearAll()">C</button>
+        <button class="key" onclick="input('1')">1</button>
+        <button class="key" onclick="input('2')">2</button>
+        <button class="key" onclick="input('3')">3</button>
+        <button class="key special" onclick="fetchRate(true)">↻</button>
+        <button class="key" onclick="input('0')">0</button>
+        <button class="key" onclick="input('.')">.</button>
+    </div>
+</div>
+
+<script>
+    // --- ESTADO ---
+    let rate = 0;
+    let currentInput = "0";
+
+    // --- UTILIDADES ---
+    function getTodayString() {
+        const d = new Date();
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    }
+    
+    // HORARIO NOCTURNO: 9:00 PM (21:00) a 11:59 PM (23:59)
+    function isPreviewWindow() {
+        const h = new Date().getHours();
+        return (h >= 21 && h <= 23); 
+    }
+
+    // --- UI HELPERS ---
+    function updateUI(newRate, dateStr, color) {
+        rate = newRate;
+        document.getElementById('bcv-rate-display').innerText = rate.toFixed(2).replace('.', ',');
+        document.getElementById('bcv-date-display').innerText = dateStr;
+        document.getElementById('bcv-rate-display').style.color = color;
+        calc();
+    }
+
+    function showNextRateUI(val) {
+        const container = document.querySelector('.rate-info');
+        // Evitar duplicados
+        if(document.querySelector('.next-rate-info')) document.querySelector('.next-rate-info').remove();
+        
+        const div = document.createElement('div');
+        div.className = 'next-rate-info';
+        div.innerHTML = `
+            <span style="margin-right:5px">Mañana:</span>
+            <span style="color:#FF5252; font-weight:700;">${val.toFixed(2).replace('.',',')}</span>
+        `;
+        // Insertar DESPUÉS del rate-info original (usando append en el padre .display)
+        document.querySelector('.display').insertBefore(div, document.querySelector('.main-amount'));
+    }
+
+    // --- CORE LOGIC ---
+    async function fetchRate(force = false) {
+        const display = document.getElementById('bcv-rate-display');
+        const todayStr = getTodayString();
+        const savedRate = parseFloat(localStorage.getItem('aureen-rate')) || 0;
+        const savedDate = localStorage.getItem('aureen-date');
+        
+        if(force) display.innerText = "...";
+
+        // 1. Mostrar Caché Inicial
+        if (savedRate > 0) {
+            updateUI(savedRate, savedDate || todayStr, (savedDate === todayStr ? '#2ECC71' : '#FFB74D'));
+        }
+
+        // 2. Buscar Datos
+        if (force || isPreviewWindow() || savedDate !== todayStr) {
+            let fetched = 0;
+            let success = false;
+            const bust = `?t=${Date.now()}`;
+            
+            // PROXIES
+            const proxies = [
+                { url: 'https://api.allorigins.win/get?url=', type: 'json' },
+                { url: 'https://corsproxy.io/?', type: 'html' }
+            ];
+            const bcv = 'https://www.bcv.org.ve/';
+
+            for (const p of proxies) {
+                if (success) break;
+                try {
+                    const res = await fetch(p.url + encodeURIComponent(bcv) + bust);
+                    if (res.ok) {
+                        let txt = "";
+                        if (p.type === 'json') {
+                            const j = await res.json();
+                            txt = j.contents;
+                        } else {
+                            txt = await res.text();
+                        }
+                        
+                        // PARSEO MANUAL
+                        if (txt) {
+                            // Limpieza
+                            const clean = txt.replace(/\s+/g, ' ');
+                            // Regex busca id="dolar" y captura el número
+                            const m = clean.match(/id="dolar".*?(\d{2,3},\d{4,8})/);
+                            if (m && m[1]) {
+                                fetched = parseFloat(m[1].replace(',', '.'));
+                                if (fetched > 10) success = true;
+                            }
+                        }
+                    }
+                } catch (e) { console.warn("Proxy error", e); }
+            }
+
+            // 3. Resultado
+            if (success && fetched > 0) {
+                if (isPreviewWindow()) {
+                    // MODO NOCHE:
+                    // Si ya había tasa de hoy (savedRate), la dejamos VERDE.
+                    // Si no, usamos la nueva.
+                    if (savedRate > 0 && savedDate === todayStr) {
+                        updateUI(savedRate, todayStr, '#2ECC71');
+                    } else {
+                        updateUI(fetched, todayStr, '#2ECC71');
+                        localStorage.setItem('aureen-rate', fetched);
+                        localStorage.setItem('aureen-date', todayStr);
+                    }
+                    // ROJA SIEMPRE ACTIVA CON DATO NUEVO
+                    showNextRateUI(fetched);
+                } else {
+                    // MODO DÍA
+                    localStorage.setItem('aureen-rate', fetched);
+                    localStorage.setItem('aureen-date', todayStr);
+                    updateUI(fetched, todayStr, '#2ECC71');
+                    // Borrar roja
+                    if(document.querySelector('.next-rate-info')) document.querySelector('.next-rate-info').remove();
+                }
+            } else if (savedRate === 0) {
+                display.innerText = "Error";
+                display.style.color = "#EF5350";
+            }
+        }
+    }
+
+    // --- CALCULADORA ---
+    function input(n) {
+        if(currentInput === "0" && n !== ".") currentInput = n;
+        else currentInput += n;
+        calc();
+    }
+    function del() {
+        currentInput = currentInput.slice(0, -1);
+        if(!currentInput) currentInput = "0";
+        calc();
+    }
+    function clearAll() { currentInput = "0"; calc(); }
+    
+    function calc() {
+        document.getElementById('main-display').innerText = currentInput;
+        const val = parseFloat(currentInput);
+        const res = val * rate;
+        document.getElementById('sub-display').innerText = res.toLocaleString('es-VE', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    // ARRANQUE
+    window.onload = () => {
+        fetchRate();
+        setInterval(() => {
+            const h = new Date().getHours();
+            if(h === 21 || h === 0) fetchRate(true);
+        }, 60000);
+    };
+</script>
+
+</body>
+</html>

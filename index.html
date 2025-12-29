@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Quasar X</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="description" content="Calculadora inteligente de Tasa BCV y Divisas con diseño Liquid Glass. Rápida, precisa y hecha para Venezuela.">
+<meta name="theme-color" content="#1a1a2e">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Quasar X - Calculadora BCV">
+<meta property="og:description" content="La herramienta definitiva para tus conversiones en Bolívares. Diseño simple, tasas al día.">
+<meta property="og:image" content="icon-512.png"> <meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="Quasar X - Calculadora BCV">
+<meta property="twitter:description" content="Calculadora inteligente de Tasa BCV y Divisas con diseño innovadorSSS.">
+<meta property="twitter:image" content="icon-512.png">
+</head>
+<body>
+    <div class="app-container">
+
+        <div class="app-header">
+    <div class="header-left"></div>
+    <h1 class="app-title">Quasar X</h1>
+    <div class="header-right">
+        <button class="menu-button" onclick="toggleOptionsMenu()" aria-label="Menú">
+            <svg xmlns="http://www.w3.org/2000/svg" height="28px" viewBox="0 0 24 24" width="28px" fill="currentColor">
+                <path d="M0 0h24v24H0V0z" fill="none"/>
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+</nav>
+
+<a href="https://t.me/aureenAIbot" target="_blank" class="venezuela-banner" aria-label="Únete a Telegram">
+    <div class="stars-container">★ ★ ★ ★ ★ ★ ★</div>
+</a>
+</a>
+
+<a href="https://wa.me/5804141802040" target="_blank" class="creator-signature">
+    Hecho por Erick, contactalo por Whatsapp
+</a>
+
+        <div id="options-menu" class="options-menu-dropdown">
+    <button onclick="showModal('about-screen')">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px" fill="currentColor">
+            <path d="M0 0h24v24H0V0z" fill="none"/><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+        </svg>
+        Ayuda y FAQ
+    </button>
+</div>
+        
+    <div id="general-mode" class="mode-content">
+    <div class="display">
+        <div class="rate-info" id="general-history" style="min-height:20px; font-size: 1.2rem;"></div>
+        <div class="main-amount" id="general-display" style="font-size: 4rem;">0</div>
+    </div>
+
+    <div class="keypad">
+    <button class="key function" onclick="clearGeneral()">AC</button>
+    <button class="key function" onclick="deleteGeneral()">⌫</button>
+    <button class="key function" onclick="appendGeneral('%')">%</button>
+    <button class="key special" onclick="appendGeneral('/')">÷</button>
+
+    <button class="key" onclick="appendGeneral('7')">7</button>
+    <button class="key" onclick="appendGeneral('8')">8</button>
+    <button class="key" onclick="appendGeneral('9')">9</button>
+    <button class="key special" onclick="appendGeneral('*')">×</button>
+
+    <button class="key" onclick="appendGeneral('4')">4</button>
+    <button class="key" onclick="appendGeneral('5')">5</button>
+    <button class="key" onclick="appendGeneral('6')">6</button>
+    <button class="key special" onclick="appendGeneral('-')">−</button>
+
+    <button class="key" onclick="appendGeneral('1')">1</button>
+    <button class="key" onclick="appendGeneral('2')">2</button>
+    <button class="key" onclick="appendGeneral('3')">3</button>
+    <button class="key special" onclick="appendGeneral('+')">+</button>
+
+    <button class="key zero-btn" onclick="appendGeneral('0')">0</button>
+    <button class="key" onclick="appendGeneral('.')">.</button>
+    <button class="key special" onclick="calculateGeneral()">=</button>
+</div>
+</div>
+
+        <div id="bcv-mode" class="mode-content active">
+            <div class="display">
+    
+    <div class="rate-info">
+        <span style="font-weight: 500;">Tasa Oficial BCV:</span> 
+        <span id="bcv-rate-display" onclick="fetchBCVRate(true)" style="cursor:pointer">--.--</span>
+    </div>
+
+    <div class="rate-date-line">
+        📅 Fecha valor: <span id="bcv-date-display">--/--/----</span>
+    </div>
+
+    <div class="main-amount"><span id="bcv-from-symbol">$</span> <span id="bcv-main-display">0</span></div>
+    
+    <div class="converted-row">
+        <div class="converted-amount"><span id="bcv-to-symbol">Bs</span> <span id="bcv-sub-display">0,00</span></div>
+        
+        <div class="share-container" id="share-widget-bcv">
+    <button class="share-trigger" onclick="toggleShare('bcv')">
+        <span class="trigger-icon">🔗</span>
+        <span class="trigger-text">Comparte tu calculo en Redes Sociales</span>
+    </button>
+
+    <div class="share-icons">
+        <button class="wa-btn" onclick="shareToWhatsApp('bcv')" aria-label="WhatsApp">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.1 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM12.05 20.21c-1.46 0-2.9-.39-4.18-1.15l-.3-.18-3.11.82.83-3.03-.19-.31a8.163 8.163 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c.02 4.54-3.68 8.22-8.21 8.22zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.23.24-.39.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.48 1.02 2.64.12.16 3.54 5.4 8.58 7.58 2.92 1.27 4.06 1.01 4.8.95.82-.07 1.47-.6 1.67-1.18.2-.58.2-1.08.14-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
+        </button>
+        <button class="tg-btn" onclick="shareToTelegram('bcv')" aria-label="Telegram">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </button>
+        <button class="x-btn" onclick="shareToSocial('x', 'bcv')" aria-label="X">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+        <button class="threads-btn" onclick="shareToSocial('threads', 'bcv')" aria-label="Threads">
+            <img src="icon-threads.png" alt="Threads" class="social-icon-img" style="width:16px;height:16px;">
+        </button>
+    </div>
+</div>
+    </div>
+</div>
+            <div class="keypad">
+                <button class="key" onclick="appendNumber('7', 'bcv')">7</button>
+                <button class="key" onclick="appendNumber('8', 'bcv')">8</button>
+                <button class="key" onclick="appendNumber('9', 'bcv')">9</button>
+                <button class="key icon" onclick="deleteLast('bcv')">⌫</button>
+                <button class="key" onclick="appendNumber('4', 'bcv')">4</button>
+                <button class="key" onclick="appendNumber('5', 'bcv')">5</button>
+                <button class="key" onclick="appendNumber('6', 'bcv')">6</button>
+                <button class="key function" onclick="clearAll('bcv')">C</button>
+                <button class="key" onclick="appendNumber('1', 'bcv')">1</button>
+                <button class="key" onclick="appendNumber('2', 'bcv')">2</button>
+                <button class="key" onclick="appendNumber('3', 'bcv')">3</button>
+                <button class="key icon special" onclick="swapCurrencies('bcv')" rowspan="2">⇅</button>
+                <button class="key" onclick="appendDecimal('bcv')">,</button>
+                <button class="key" onclick="appendNumber('0', 'bcv')">0</button>
+                <button class="key function" onclick="appendNumber('00', 'bcv')">00</button>
+            </div>
+        </div>
+
+        <div id="custom-mode" class="mode-content">
+    <div class="display">
+        
+        <div class="custom-rate-wrapper">
+            <span class="custom-label">Tu Tasa personalizada:</span>
+            <div class="input-glass-container">
+                <span class="currency-prefix">Bs.</span>
+                <input type="number" id="custom-rate-input" placeholder="0.00" step="0.01" inputmode="decimal" oninput="saveCustomRate()">
+            </div>
+        </div>    
+
+        <div class="main-amount"><span id="custom-from-symbol">$</span> <span id="custom-main-display">0</span></div>
+        
+        <div class="converted-row">
+            <div class="converted-amount"><span id="custom-to-symbol">Bs</span> <span id="custom-sub-display">0,00</span></div>
+            
+            <div class="share-container" id="share-widget-custom">
+                <button class="share-trigger" onclick="toggleShare('custom')">
+                    <span class="trigger-icon">🔗</span>
+                    <span class="trigger-text">Comparte tu calculo en Redes Sociales</span>
+                </button>
+                <div class="share-icons">
+                    <button class="wa-btn" onclick="shareToWhatsApp('custom')" aria-label="WhatsApp">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.1 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM12.05 20.21c-1.46 0-2.9-.39-4.18-1.15l-.3-.18-3.11.82.83-3.03-.19-.31a8.163 8.163 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.183 8.183 0 0 1 2.41 5.83c.02 4.54-3.68 8.22-8.21 8.22zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.23.24-.39.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.48 1.02 2.64.12.16 3.54 5.4 8.58 7.58 2.92 1.27 4.06 1.01 4.8.95.82-.07 1.47-.6 1.67-1.18.2-.58.2-1.08.14-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
+                    </button>
+                    <button class="tg-btn" onclick="shareToTelegram('custom')" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                    </button>
+                    <button class="x-btn" onclick="shareToSocial('x', 'custom')" aria-label="X">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </button>
+                    <button class="threads-btn" onclick="shareToSocial('threads', 'custom')" aria-label="Threads">
+                        <img src="icon-threads.png" alt="Threads" class="social-icon-img" style="width:16px;height:16px;">
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="keypad">
+        <button class="key" onclick="appendNumber('7', 'custom')">7</button>
+        <button class="key" onclick="appendNumber('8', 'custom')">8</button>
+        <button class="key" onclick="appendNumber('9', 'custom')">9</button>
+        <button class="key icon" onclick="deleteLast('custom')">⌫</button>
+        <button class="key" onclick="appendNumber('4', 'custom')">4</button>
+        <button class="key" onclick="appendNumber('5', 'custom')">5</button>
+        <button class="key" onclick="appendNumber('6', 'custom')">6</button>
+        <button class="key function" onclick="clearAll('custom')">C</button>
+        <button class="key" onclick="appendNumber('1', 'custom')">1</button>
+        <button class="key" onclick="appendNumber('2', 'custom')">2</button>
+        <button class="key" onclick="appendNumber('3', 'custom')">3</button>
+        <button class="key icon special" onclick="swapCurrencies('custom')" rowspan="2">⇅</button>
+        <button class="key" onclick="appendDecimal('custom')">,</button>
+        <button class="key" onclick="appendNumber('0', 'custom')">0</button>
+        <button class="key function" onclick="appendNumber('00', 'custom')">00</button>
+    </div>
+</div>
+
+<nav class="tabs">
+        <button id="btn-general" class="tab-button" onclick="switchMode('general')">
+            <span class="tab-label">General</span>
+        </button>
+        <button id="btn-bcv" class="tab-button active" onclick="switchMode('bcv')">
+            <span class="tab-label">Tasa BCV</span>
+        </button>
+        <button id="btn-custom" class="tab-button" onclick="switchMode('custom')">
+            <span class="tab-label">Manual</span>
+        </button>
+    </nav>
+
+    <div id="about-screen" class="modal-screen">
+        <div class="modal-header">
+            <button class="modal-close-btn" onclick="closeModal('about-screen')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+            </button>
+            <h2 class="modal-title">Quasar X</h2>
+        </div>
+        <div class="modal-content">
+            <p><strong>Sobre:</strong></p>
+            <p>✨ Quasar X es mucho más que una simple calculadora: es un proyecto creado por Erick Manrique como extensión y complemento de la Inteligencia Artificial Aureen AI. Su propósito es ofrecer una herramienta práctica, clara y accesible, que se integra de manera natural con la experiencia que Aureen AI brinda a los usuarios.</p>
+            <p>🚀 Con Quasar X, los cálculos dejan de ser fríos números y se convierten en un recurso que acompaña la visión de Aureen AI: unir tecnología y humanidad en soluciones inteligentes y cercanas.</p>
+            <p>💬 Si tienes dudas, propuestas o comentarios, Erick estará encantado de escucharte en 👉 t.me/Emanrique0.</p>
+            <br>
+            <p><strong>Versión:</strong> 3.17 (Compilacion 899,12)</p>
+        </div>
+    </div>
+    <div id="install-pwa-modal" class="modal-screen">
+        <div class="modal-header">
+            <button class="modal-close-btn" onclick="closeModal('install-pwa-modal')">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+            </button>
+            <h2 class="modal-title">¡Instala la aplicacion en tu Smartphone!</h2>
+        </div>
+        <div class="modal-content install-instructions">
+            <button id="install-pwa-btn" class="install-pwa-button" onclick="triggerInstallPrompt()">
+        Instalar Aplicación
+    </button>
+    <p>El proyecto es nuevo por lo que no tenemos los recursos para que sea una aplicacion que este en Google Play Store.</p>
+            <p>Por lo que opera como un contenedor web permitiendote ejecutarla desde el navegador, los siguientes pasos te permitiran instalarla en tu celular funcionando como una aplicacion WebApp .</p>
+            
+            <p class="install-section-title">En Google Chrome:</p>
+            <ol>
+                <li>Toca el menú de <strong>3 puntos (⋮)</strong> en la esquina.</li>
+                <li>Selecciona <strong>"Instalar aplicación"</strong> o "Agregar a pantalla de inicio".</li>
+            </ol>
+            
+            <p class="install-section-title">En Safari 'Para iPhone':</p>
+            <ol>
+                <li>Toca el ícono de <strong>Compartir</strong> (un cuadro con una flecha hacia arriba).</li>
+                <li>Desliza y selecciona <strong>"Agregar a la pantalla de inicio"</strong>.</li>
+                <li>Espero el proyecto sea de tú agrado total, me ayudarás muchisimo</li>
+            </ol>
+        </div>
+    </div>
+    </div>
+    <div id="install-banner" class="install-banner-container">
+    <div class="install-text">
+        <span>📲 Instala <strong>Quasar X</strong> para mejor experiencia</span>
+    </div>
+    <button id="install-btn-action" class="install-action-btn">
+        INSTALAR AHORA
+    </button>
+    <button class="close-banner" onclick="document.getElementById('install-banner').style.display='none'">✖</button>
+</div>
+    <script src="script.js"></script>
+</body>
+</html>

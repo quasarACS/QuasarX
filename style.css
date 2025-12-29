@@ -1,0 +1,763 @@
+:root {
+    /* --- PALETA APPLE (MODO OSCURO) --- */
+    --bg-gradient: #000000;         /* Fondo Negro Solido */
+    --glass-bg: #000000;            /* Quitamos el efecto cristal */
+    --glass-border: #333333;        /* Bordes sutiles gris oscuro */
+    --glass-highlight: #444444;     /* Color al presionar */
+    
+    --text-primary: #FFFFFF;
+    --text-secondary: #999999;      /* Gris clásico de iOS */
+    --accent-color: #FF9F0A;        /* Naranja iOS exacto */
+    
+    /* Variables nuevas para botones específicos */
+    --btn-num: #333333;             /* Gris Oscuro (Números) */
+    --btn-func: #A5A5A5;            /* Gris Claro (Arriba) */
+    --text-black: #000000;          /* Texto negro para botones claros */
+}
+
+/* Mantenemos el soporte para modo claro invirtiendo colores */
+body[data-theme="light"] {
+    --bg-gradient: #F2F2F7;
+    --glass-bg: #FFFFFF;
+    --glass-border: #D1D1D6;
+    --text-primary: #000000;
+    --text-secondary: #666666;
+    --btn-num: #FFFFFF;             /* Botones blancos en modo día */
+    --btn-func: #D1D1D6;
+    --glass-highlight: #E5E5EA;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    margin: 0;
+    height: 100vh; 
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; 
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.app-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    
+    /* Fondo sólido mate */
+    background: var(--glass-bg);
+    /* Quitamos backdrop-filter para evitar crasheos gráficos */
+    
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
+@media (min-width: 500px) {
+    .app-container {
+        max-width: 380px;
+        max-height: 800px;
+        border-radius: 40px;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 0 0 10px #1c1c1e, 0 30px 60px rgba(0,0,0,0.5); /* Sombra doble estilo iPhone */
+    }
+}
+
+/* --- HEADER --- */
+.app-header {
+    flex: 0 0 auto; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px 5px 20px;
+    z-index: 20;
+    width: 100%;
+}
+
+.header-left, .header-right {
+    width: 40px; 
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+}
+
+.app-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.4em;
+    margin: 0 5px;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.menu-button {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+/* --- BARRA DE NAVEGACIÓN FLOTANTE (DOCK ABSOLUTO) --- */
+.tabs {
+    /* Posición: Flotar pegado al fondo */
+    position: absolute; 
+    bottom: 25px;       /* Distancia desde el borde inferior */
+    left: 20px;         /* Margen izquierdo */
+    right: 20px;        /* Margen derecho (ocupa todo el ancho disponible) */
+    
+    /* Evitar que se deforme */
+    height: 65px;
+    margin: 0;          /* Quitamos márgenes viejos porque usamos bottom/left/right */
+    
+    /* Estilo Visual */
+    background: #1C1C1E;
+    border: 1px solid #333;
+    border-radius: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    
+    /* Asegurar que flote ENCIMA de todo */
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.tab-button {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tab-icon-wrap {
+    border-radius: 14px;
+    padding: 4px 8px;
+    transition: background 0.3s;
+    display: flex;
+}
+
+.tab-button svg { width: 22px; height: 22px; fill: currentColor; }
+.tab-label { font-size: 0.85em; font-weight: 500; }
+
+.tab-button.active { color: var(--text-primary); }
+.tab-button.active .tab-icon-wrap { background: var(--accent-color); color: white; }
+
+/* --- CONTENIDO PRINCIPAL --- */
+.mode-content {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    height: 100%; 
+    position: relative;
+}
+.mode-content.active { display: flex; }
+
+/* --- PANTALLA (DISPLAY) --- */
+.display {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; 
+    align-items: flex-end;
+    padding: 10px 20px;
+    min-height: 100px; 
+    text-align: right;
+}
+
+.rate-info {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Nueva Línea para Fecha */
+.rate-date-line {
+    font-size: 0.75em;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    margin-bottom: 5px;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+#bcv-rate-display {
+    font-weight: 700;
+    transition: color 0.3s ease;
+    text-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+}
+
+.main-amount {
+    font-size: clamp(2.5rem, 10vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* --- FILA DE RESULTADO Y BOTONES (VERTICAL) --- */
+.converted-row {
+    display: flex;
+    flex-direction: column; /* Apila verticalmente */
+    align-items: flex-end;  /* Alinea a la derecha */
+    justify-content: center;
+    gap: 8px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.converted-amount {
+    font-size: 1.8em; /* Más grande para destacar */
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.2;
+}
+
+/* --- WIDGET COMPARTIR DESPLEGABLE --- */
+.share-container {
+    position: relative;
+    display: flex;
+    justify-content: flex-end; /* Alineado a la derecha */
+    align-items: center;
+    margin-top: 10px;
+    height: 40px; /* Altura fija para evitar saltos */
+}
+
+/* El contenedor píldora */
+.share-trigger {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.8em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2; /* Para que quede encima al cerrar */
+}
+
+.share-trigger:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.95);
+}
+
+/* El contenedor de iconos (Oculto inicialmente) */
+.share-icons {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--dock-bg); /* Fondo sólido/glass */
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 0 5px;
+    
+    /* Animación de apertura */
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8) translateX(20px);
+    transform-origin: right center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ESTADO ACTIVO: Cuando se añade la clase .open */
+.share-container.open .share-trigger {
+    opacity: 0; /* Desaparece el botón texto */
+    pointer-events: none;
+}
+
+.share-container.open .share-icons {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1) translateX(0);
+    padding: 0 10px; /* Espacio para los iconos */
+}
+
+/* Ajuste fino a los botones de iconos para este tamaño */
+.share-icons button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50% !important; /* ¡ESTO ES LA CLAVE! Forzamos el círculo */
+    box-shadow: none; /* Quitamos sombra para que se vea plano y limpio */
+    border: none;
+    padding: 0; /* Evita que se deformen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- TECLADO (BOTONES REDONDOS) --- */
+.keypad {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* TRUCO: Aumentamos el gap y el padding para que los botones tengan menos espacio y se achiquen */
+    gap: 20px; 
+    padding: 20px 45px 45px 45px; /* Más margen a los lados (antes 20px) */
+    padding-bottom: 140px !important;
+}
+
+.key {
+    background: var(--btn-num);
+    border: none;
+    color: var(--text-primary);
+    
+    /* Bajamos un poco el tamaño de la letra para que combine con el botón más pequeño */
+    font-size: 1.5rem; 
+    
+    padding: 0;
+    aspect-ratio: 1; /* Mantiene el círculo perfecto */
+    border-radius: 50%;
+    
+    cursor: pointer;
+    transition: filter 0.2s;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    font-family: -apple-system, sans-serif;
+    font-weight: 500;
+}
+
+/* Mantenemos los efectos de pulsación y colores */
+.key:active { filter: brightness(130%); transform: none; }
+.key.function, .key.icon { background: var(--btn-func); color: var(--text-black); font-weight: 600; }
+.key.special { background: var(--accent-color); color: white; font-weight: 600; }
+.key.special.icon { background: var(--accent-color); color: white; }
+
+/* --- BANNER FLOTANTE (TASA MAÑANA) --- */
+.next-rate-container {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    animation: floatIn 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.next-rate-badge {
+    background: rgba(30, 30, 30, 0.6); /* Fondo oscuro semitransparente */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.next-rate-icon { font-size: 0.9em; animation: pulse 2s infinite; }
+.next-rate-label { font-size: 0.75em; color: rgba(255, 255, 255, 0.8); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.next-rate-value { font-family: 'Poppins', sans-serif; font-weight: 700; color: #FF8A80; font-size: 0.95em; font-variant-numeric: tabular-nums; }
+
+@keyframes floatIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+/* --- MODALES Y EXTRAS --- */
+.options-menu-dropdown {
+    position: absolute; top: 50px; right: 15px;
+    background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(15px);
+    border-radius: 12px; border: 1px solid var(--glass-border);
+    display: none; z-index: 200; width: 200px; overflow: hidden;
+}
+.options-menu-dropdown.show { display: block; }
+.options-menu-dropdown button {
+    width: 100%; background: none; border: none; color: white;
+    padding: 12px 15px; text-align: left; display: flex; gap: 10px; align-items: center;
+}
+
+.modal-screen {
+    display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(10, 10, 20, 0.95); backdrop-filter: blur(10px);
+    z-index: 300; flex-direction: column;
+}
+.modal-screen.show { display: flex; }
+.modal-header { padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid var(--glass-border); height: 50px; }
+.modal-close-btn { background: none; border: none; color: white; padding: 8px; }
+/* --- MEJORA DEL MODAL ACERCA DE --- */
+.modal-content {
+    flex: 1;
+    overflow-y: auto;
+    
+    /* Ajuste de espaciado */
+    padding: 20px 25px; 
+    
+    /* AQUÍ ESTÁ EL CAMBIO CLAVE: Alineación a la izquierda */
+    text-align: left;   
+    
+    color: var(--text-primary);
+    
+    /* Mejoras de tipografía para lectura */
+    font-size: 0.95rem; 
+    line-height: 1.6;   /* Separa las líneas para que no se vea apretado */
+}
+
+/* Agregamos esto para que los párrafos se vean ordenados */
+.modal-content p {
+    margin-bottom: 15px;      /* Espacio entre párrafos */
+    color: var(--text-secondary); /* Color gris suave, menos agresivo */
+}
+
+/* Si usas <strong> para títulos, que resalten en blanco */
+.modal-content strong {
+    color: var(--text-primary);
+    display: block; /* Asegura que el título ocupe su propia línea */
+    margin-top: 10px;
+}
+
+/* Banderin Venezuela */
+.venezuela-banner {
+    display: flex; align-items: center; justify-content: center; text-decoration: none;
+    height: 24px; margin: 15px 15px 0 15px; border-radius: 12px;
+    background: linear-gradient(to bottom, #FFCC00 33%, #00247D 33%, #00247D 66%, #CF142B 66%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s; position: relative; overflow: hidden;
+}
+.venezuela-banner:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); }
+.stars-container { color: white; font-size: 8px; letter-spacing: 2px; margin-top: -1px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); white-space: nowrap; opacity: 0.9; }
+
+.creator-signature {
+    display: block; text-align: center; font-size: 0.75em; color: var(--text-secondary);
+    text-decoration: none; margin-top: 8px; margin-bottom: 5px; font-weight: 500; opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.creator-signature:hover, .creator-signature:active { opacity: 1; transform: scale(1.02); color: var(--accent-color); }
+
+/* Media Queries */
+@media (max-height: 650px) {
+    .app-header { padding-top: 5px; }
+    .tabs { height: 45px; margin-top: 5px; }
+    .main-amount { font-size: 2.2em; }
+    .key { padding: 8px 0; font-size: 1.2em; }
+    .keypad { padding-bottom: 10px !important; gap: 6px; }
+    .display { min-height: 80px; }
+}
+
+/* Install Button */
+#install-pwa-btn {
+    display: none; background: var(--accent-color); color: white; border: none;
+    padding: 15px 30px; border-radius: 30px; font-size: 1.1em; font-weight: 600;
+    margin: 10px auto 20px auto; cursor: pointer; box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
+    width: 80%; max-width: 250px; transition: transform 0.2s;
+}
+#install-pwa-btn:active { transform: scale(0.95); }
+.custom-rate-input input {
+    background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white;
+    border-radius: 8px; padding: 5px; text-align: right; width: 90px;
+}
+.setting-item {
+    background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+/* --- DISEÑO MODO CUSTOM (MANUAL) --- */
+.custom-rate-wrapper {
+    width: 100%;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Alinea todo a la derecha */
+}
+
+.custom-label {
+    font-size: 0.75em;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input-glass-container {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05); /* Fondo muy sutil */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 0 10px;
+    width: 140px; /* Ancho fijo elegante */
+    transition: all 0.3s ease;
+}
+
+/* Efecto al tocar el input */
+.input-glass-container:focus-within {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(10, 132, 255, 0.2);
+}
+
+.currency-prefix {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-right: 5px;
+    font-size: 1.1em;
+}
+
+/* Input invisible pero funcional */
+#custom-rate-input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.3em;
+    font-weight: 600;
+    width: 100%;
+    text-align: right;
+    outline: none;
+    padding: 8px 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Eliminar flechas del input number en navegadores */
+#custom-rate-input::-webkit-inner-spin-button, 
+#custom-rate-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+/* --- BOTÓN SOLARIS (THEME TOGGLE) --- */
+.theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    color: var(--text-primary);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Configuración de Iconos */
+.icon-sun, .icon-moon {
+    position: absolute;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Rebote elástico */
+}
+
+/* --- ESTADOS POR DEFECTO (MODO OSCURO ACTIVO) --- */
+/* En modo oscuro, mostramos la Luna, ocultamos el Sol */
+.icon-sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+}
+.icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    fill: rgba(255, 255, 255, 0.2); /* Relleno sutil */
+}
+
+/* --- ESTADOS CUANDO ES MODO CLARO --- */
+/* Usamos el atributo data-theme del body para controlar el CSS */
+body[data-theme="light"] .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    color: #F59E0B; /* Amarillo Sol */
+    fill: rgba(245, 158, 11, 0.2);
+}
+
+body[data-theme="light"] .icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+}
+
+/* Efecto Glow en el botón según el tema */
+body[data-theme="light"] .theme-toggle-btn {
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+    border-color: rgba(245, 158, 11, 0.3);
+}
+/* --- BANNER FLOTANTE DE INSTALACIÓN --- */
+.install-banner-container {
+    display: none; /* Oculto por defecto, JS lo activará */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 400px;
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 15px;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideUp 0.5s ease-out;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+}
+
+@keyframes slideUp { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+.install-text {
+    color: white;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.install-action-btn {
+    background: var(--accent-color); /* Tu azul #0A84FF */
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1em;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
+    transition: transform 0.2s;
+}
+
+.install-action-btn:active { transform: scale(0.95); }
+
+.close-banner {
+    position: absolute;
+    top: 5px; right: 10px;
+    background: none; border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 1.2em; cursor: pointer;
+}
+/* --- NUEVA INSIGNIA VENEZUELA (Estilo Minimalista) --- */
+.venezuela-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Tamaño y Posición */
+    width: fit-content; /* Se adapta al contenido, no ocupa todo el ancho */
+    margin: 10px auto 0 auto; /* Centrado */
+    padding: 8px 20px;
+    
+    /* Estilo Cápsula iOS */
+    background: #1C1C1E; /* Gris muy oscuro (Apple Secondary Background) */
+    border-radius: 20px;
+    text-decoration: none;
+    
+    /* Sutil borde y sombra */
+    border: 1px solid #333;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+/* Efecto al tocar */
+.venezuela-banner:active {
+    transform: scale(0.95);
+    background: #2C2C2E;
+}
+
+/* Estilo de las Estrellas (Tu HTML interno) */
+.stars-container {
+    color: #FFFFFF;
+    font-size: 10px;
+    letter-spacing: 3px;
+    opacity: 0.9;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Pequeño brillo */
+}
+
+/* --- EL TOQUE DE LA BANDERA (Línea Tricolor Inferior) --- */
+.venezuela-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px; /* Línea fina elegante */
+    
+    /* Gradiente exacto de la bandera */
+    background: linear-gradient(to right, 
+        #FFCC00 33%, 
+        #00247D 33%, #00247D 66%, 
+        #CF142B 66%
+    );
+}
+/* Ajuste para el botón CERO ancho en modo General */
+.key[style*="grid-column: span 2"] {
+    width: 100%; /* Ocupar todo el espacio de las 2 columnas */
+    padding-left: 25px; /* Alinear texto un poco a la izquierda como Apple */
+    justify-content: flex-start; /* Texto a la izquierda */
+}
+/* --- AJUSTE ESPECÍFICO PARA MODO GENERAL --- */
+#general-mode .display {
+    padding-bottom: 5px; /* Menos espacio abajo */
+    justify-content: flex-end;
+}
+
+#general-mode .main-amount {
+    font-size: 3.5rem !important; /* Un poco más pequeño que la de divisas */
+    margin-bottom: 10px;
+}
+
+#general-mode .rate-info {
+    /* El historial de operaciones */
+    min-height: 25px;
+    margin-bottom: 0;
+    opacity: 0.7;
+}
+
+/* Si la pantalla es muy pequeña, ajustamos los botones científicos */
+@media (max-height: 700px) {
+    #general-mode .keypad {
+        padding-top: 10px;
+        gap: 12px; /* Botones más juntos verticalmente */
+    }
+    #general-mode .key {
+        font-size: 1.3rem; /* Texto un poco más chico */
+    }
+}
+/* --- CORRECCIÓN DE BOTONES GIGANTES --- */
+
+/* Estilo específico para el botón CERO ancho (iPhone style) */
+.zero-btn {
+    grid-column: span 2;       /* Ocupa 2 columnas */
+    width: 100%;               /* Ancho completo del espacio */
+    border-radius: 40px !important; /* Borde cápsula */
+    aspect-ratio: auto !important;  /* IMPORTANTE: Evita que sea un círculo gigante */
+    height: 100%;              /* Altura igual a los otros botones */
+    padding-left: 30px !important; /* Texto alineado a la izquierda */
+    justify-content: flex-start !important;
+}
+
+/* Asegurar que el teclado General sea idéntico al de BCV */
+#general-mode .keypad {
+    grid-template-rows: repeat(5, 1fr); /* 5 filas iguales */
+    align-content: end; /* Pegar los botones al fondo */
+}
