@@ -1,5 +1,5 @@
 // ==========================================
-// PROYECTO NOVA X - v29.0 (FINAL)
+// PROYECTO QUASAR X - v29.0 (FINAL)
 // ==========================================
 
 // --- 1. CONFIGURACIÓN PWA Y BOTÓN DE INSTALACIÓN ---
@@ -458,12 +458,12 @@ function getShareData(mode) {
 function shareToWhatsApp(mode) {
     if (parseRaw(state[mode].currentInput) === 0) {
         const shopPhoneNumber = "584141802040"; 
-        window.open(`https://wa.me/${shopPhoneNumber}?text=${encodeURIComponent("Hola Erick, me interesa  Nova X.")}`, '_blank');
+        window.open(`https://wa.me/${shopPhoneNumber}?text=${encodeURIComponent("Hola Erick, me interesa  Quasar X.")}`, '_blank');
         return; 
     }
     const data = getShareData(mode);
     const message = 
-`*Nova X* 💎 | Reporte
+`*Quasar X* 💎 | Reporte
 ──────────────
 💵 *${data.amountUSD} $*
       ⬇️
@@ -480,7 +480,7 @@ function shareToWhatsApp(mode) {
 function shareToTelegram(mode) {
     const data = getShareData(mode);
     const msg = 
-`💎 **Cálculo Nova X**
+`💎 **Cálculo Quasar X**
 
 💵 **${data.amountUSD} $**
 🇻🇪 **${data.amountBS} Bs**
@@ -497,7 +497,7 @@ function shareToSocial(platform, mode) {
 
 function shareToSocialGeneric(platform, mode) {
     const data = getShareData(mode);
-    const msg = `💱 Nova X | ${data.date}\n\n💵 ${data.amountUSD}$ ➡️ 🇻🇪 ${data.amountBS} Bs\n\n📊 Tasa: ${data.rate}\n\n#BCV #Venezuela #Dolar #NovaX`;
+    const msg = `💱 Quasar X | ${data.date}\n\n💵 ${data.amountUSD}$ ➡️ 🇻🇪 ${data.amountBS} Bs\n\n📊 Tasa: ${data.rate}\n\n#BCV #Venezuela #Dolar #QuasarX`;
     const botLink = "https://t.me/aureenAIbot";
     let url = "";
     if (platform === 'x') {

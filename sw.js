@@ -1,5 +1,5 @@
 // Define un nombre para el caché
-const CACHE_NAME = 'aureen-calc-v1';
+const CACHE_NAME = 'QuasarX-PWA';
 // Lista los archivos base de tu app
 const urlsToCache = [
     './',               // La raíz (importante)

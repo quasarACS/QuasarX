@@ -276,5 +276,14 @@
     <button class="close-banner" onclick="document.getElementById('install-banner').style.display='none'">✖</button>
 </div>
     <script src="script.js"></script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker registrado', reg))
+        .catch(err => console.warn('Error al registrar sw', err));
+    });
+  }
+</script>
 </body>
 </html>
